@@ -201,7 +201,3 @@ class RomanNumerals {
     return new RomanNumerals();
   }
 }
-
-const roman = RomanNumerals.create();
-console.log(roman.toRoman(1990));
-console.log(roman.toNumerals("MCM"));
