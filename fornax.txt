@@ -1,0 +1,118 @@
+ 
+#if ($type.value) in ("tol_ig","ig","igen_nem") !!!!!
+    #petField $igValue: np.nav::parameter::igValue
+        #required true
+        #if(($type.value) == "ig" && ($igValue.value < $defaultValue.value))
+            #mlMessage "Az alapértelmezett érték nem lehet nagyobb az -ig értéknél"
+       #endIf
+       #if(($type.value) == "ig" && ($igValue.value < $tolValue.value))
+            #mlMessage "Az -tol érték nem lehet nagyobb az -ig értéknél"
+       #endIf
+       #if(($type.value) == "ig" && ($igValue.value < 0))
+            #mlMessage "Az -ig érték nem lehet kisebb 0-nál"
+       #endIf
+    #end  
+#endIf
+
+#if ($type.value) in ("tol_ig","tol","igen_nem") !!!!!
+    #petField $tolValue: np.nav::parameter::tolValue
+        #required true
+        #if(($type.value) == "tol" && ($tolValue.value > $defaultValue.value))
+            #mlMessage "Az alapértelmezett érték nem lehet kisebb az -tol értéknél"
+       #endIf
+       #if(($type.value) == "tol" && ($tolValue.value > $igValue.value))
+            #mlMessage "Az -tol érték nem lehet nagyobb az -ig értéknél"
+       #endIf
+       #if(($type.value) == "tol" && ($tolValue.value < 0))
+            #mlMessage "Az -tol érték nem lehet kisebb 0-nál"
+       #endIf
+    #end  
+#endIf
+
+#petField $defaultValue: np.nav::parameter::defaultValue
+    #required true
+        if($defaultValue.value < 0)
+                #mlMessage "Az alapértelmezett érték nem lehet kisebb 0-nál"
+       #endIf
+#end
+
+
+
+
+
+#declare
+  $pNode = context(parentNodeId)
+  $type = "tol_ig"
+
+  // !!!!!!!!!!! Matyi hack-fix !!!!!!!!!!!!!!
+  $admin = true
+
+#begin
+  #petObject 
+    #petField $nodeCode: evnt::String = nodeCode($pNode)
+      #label "Kód"
+      #required true
+      #readonly $admin==false
+      #info { containerClass:"p-col-12 pet-label-test e-lbl-col-float e-lbl-sm-3" }
+    #end 
+    #petField $nev: evnt::Editfield
+      #required true
+      #readonly $admin==false
+      #info { containerClass:"p-col-12 pet-label-test e-lbl-col-float e-lbl-sm-3" }
+    #end  
+    #if ($type.value) in ("tol_ig","tol","igen_nem")
+      #petField $tolValue: np.nav::parameter::tolValue
+          #required true
+          #if(($type.value) == "tol" && ($tolValue.value > $defaultValue.value))
+              #mlMessage "Az alapértelmezett érték nem lehet kisebb az -tol értéknél"
+         #endIf
+         #if(($type.value) == "tol" && ($tolValue.value > $igValue.value))
+              #mlMessage "Az -tol érték nem lehet nagyobb az -ig értéknél"
+         #endIf
+         #if(($type.value) == "tol" && ($tolValue.value < 0))
+              #mlMessage "Az -tol érték nem lehet kisebb 0-nál"
+         #endIf
+      #end  
+    #endIf
+    #if ($type) == "igen_nem"  
+      #petField $tmpDefaultValue: evnt::Checkbox
+        #storeValue nvl($tmpDefaultValue.value,0,$tmpDefaultValue.value)
+        #info { containerClass:"p-col-12 pet-label-test e-lbl-col-float e-lbl-sm-3" }
+      #end
+      #petField $defaultValue: np.nav::parameter::defaultValue
+        #hidden true
+        #storeValue $tmpDefaultValue.value
+        #info { containerClass:"p-col-12 pet-label-test e-lbl-col-float e-lbl-sm-3" }
+      #end 
+    #else
+      #petField $defaultValue: np.nav::parameter::defaultValue
+        #required true
+        #mlMessage ($defaultValue.value<=0)?"A kezdőértéknek nagyobbnak kell lennie, mint 0":""
+        #info { containerClass:"p-col-12 pet-label-test e-lbl-col-float e-lbl-sm-3" }
+      #end
+    #if ($type.value) in ("tol_ig","ig","igen_nem")
+      #petField $igValue: np.nav::parameter::igValue
+        #required true
+          #if(($type.value) == "ig" && ($igValue.value < $defaultValue.value))
+              #mlMessage "Az alapértelmezett érték nem lehet nagyobb az -ig értéknél"
+         #endIf
+         #if(($type.value) == "ig" && ($igValue.value < $tolValue.value))
+              #mlMessage "Az -tol érték nem lehet nagyobb az -ig értéknél"
+         #endIf
+         #if(($type.value) == "ig" && ($igValue.value < 0))
+              #mlMessage "Az -ig érték nem lehet kisebb 0-nál"
+         #endIf
+      #end  
+    #endIf
+      #petField $egys: np.nav::parameter::unit
+        #readonly $admin==false
+        #info { containerClass:"p-col-12 pet-label-test e-lbl-col-float e-lbl-sm-3" }
+      #end
+      #if $type == "ertek"
+        #petField $tolValue: np.nav::parameter::tolValue
+          #info { containerClass:"p-col-12 pet-label-test e-lbl-col-float e-lbl-sm-3" }
+        #end 
+      #endIf
+    #endIf
+  #end
+#end
